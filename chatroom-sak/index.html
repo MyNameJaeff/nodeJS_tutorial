@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form>
+        <label for="chatBox">Write:</label>
+        <input type="text" id="chatBox" name="chatBox" oninput="test();">
+        <input type="submit" value="Send" name="submit">
+    </form>
+    <div id="isTyping"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const test = () => {
+            socket.emit("userIsTyping", true);
+        }
+        var timeoutHandle = window.setTimeout();
+
+
+        socket.on("someone is writing", (areThey) => {
+            window.clearTimeout(timeoutHandle);
+            document.getElementById("isTyping").innerHTML = "A user is typing...";
+            timeoutHandle = window.setTimeout(() => {
+                socket.emit("stop typing", false);
+            }, 7500);
+        })
+        socket.on("not any more", () => {
+            document.getElementById("isTyping").innerHTML = "";
+        })
+    </script>
+</body>
+
+</html>
